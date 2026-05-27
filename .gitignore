@@ -1,0 +1,6 @@
+logs/
+zapret-ui.state
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

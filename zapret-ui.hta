@@ -1,0 +1,1646 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="x-ua-compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+
+<title>Zapret UI</title>
+
+<HTA:APPLICATION
+  ID="ZapretUI"
+  APPLICATIONNAME="Zapret UI"
+  BORDER="thin"
+  CAPTION="yes"
+  SHOWINTASKBAR="yes"
+  SINGLEINSTANCE="yes"
+  SYSMENU="yes"
+  SCROLL="yes"
+  WINDOWSTATE="normal"
+/>
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: Segoe UI, Arial, sans-serif;
+    background: #080f1f;
+    color: #e5e7eb;
+    overflow: auto;
+    min-width: 1120px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .app {
+    padding: 16px;
+    min-width: 1120px;
+  }
+
+  .header {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: #111827;
+    border: 1px solid #26364a;
+    box-shadow: 0 10px 24px rgba(0,0,0,.22);
+    margin-bottom: 14px;
+  }
+
+  .header-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .header-left {
+    vertical-align: top;
+  }
+
+  .header-right {
+    width: 235px;
+    vertical-align: top;
+    text-align: right;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 23px;
+    line-height: 28px;
+    color: #ffffff;
+  }
+
+  .subtitle {
+    margin-top: 4px;
+    color: #9ca3af;
+    font-size: 13px;
+  }
+
+  .path {
+    margin-top: 8px;
+    color: #93c5fd;
+    font-size: 12px;
+    font-family: Consolas, monospace;
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  .main-state {
+    display: block;
+    padding: 9px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    background: #7f1d1d;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .main-state.ok { background: #166534; }
+  .main-state.warn { background: #92400e; }
+  .main-state.bad { background: #7f1d1d; }
+
+  .top-button {
+    display: inline-block;
+    min-width: 92px;
+    margin-left: 4px;
+  }
+
+  .notice {
+    position: relative;
+    padding: 10px 42px 10px 12px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    border: 1px solid #334155;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .notice-close {
+    position: absolute;
+    right: 8px;
+    top: 7px;
+    width: 24px;
+    height: 24px;
+    min-height: 24px;
+    padding: 0;
+    margin: 0;
+    border-radius: 999px;
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .notice-close:hover {
+    background: rgba(255,255,255,.22);
+  }
+
+  .notice.info {
+    background: #0f1f35;
+    color: #dbeafe;
+    border-color: #1d4ed8;
+  }
+
+  .notice.ok {
+    background: #0d2519;
+    color: #bbf7d0;
+    border-color: #15803d;
+  }
+
+  .notice.warn {
+    background: #2a1d09;
+    color: #fed7aa;
+    border-color: #b45309;
+  }
+
+  .notice.bad {
+    background: #2b1010;
+    color: #fecaca;
+    border-color: #b91c1c;
+  }
+
+  .notice.hidden {
+    display: none;
+  }
+
+  .main-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .left-col {
+    width: 43%;
+    vertical-align: top;
+    padding-right: 8px;
+  }
+
+  .right-col {
+    width: 57%;
+    vertical-align: top;
+    padding-left: 8px;
+  }
+
+  .card {
+    background: #111827;
+    border: 1px solid #26364a;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.16);
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 5px;
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-bottom: 11px;
+    line-height: 1.35;
+  }
+
+  .summary-title {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #ffffff;
+  }
+
+  .summary-line {
+    font-size: 13px;
+    color: #cbd5e1;
+    line-height: 1.45;
+    margin-top: 4px;
+  }
+
+  .summary-line strong {
+    color: #ffffff;
+  }
+
+  .strategy-list {
+    height: 560px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    background: #060d1c;
+    padding: 7px;
+  }
+
+  .strategy-item {
+    padding: 9px 10px;
+    margin-bottom: 5px;
+    border-radius: 9px;
+    cursor: pointer;
+    color: #dbeafe;
+    font-size: 13px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .strategy-item:hover {
+    background: #1f2937;
+    border-color: #4b5563;
+  }
+
+  .strategy-item.active {
+    background: #2563eb;
+    color: white;
+    border-color: #60a5fa;
+  }
+
+  .selected {
+    margin-top: 10px;
+    padding: 9px 11px;
+    border-radius: 10px;
+    background: #071020;
+    border: 1px solid #334155;
+    color: #93c5fd;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  button {
+    border: 0;
+    border-radius: 10px;
+    padding: 9px 12px;
+    min-height: 36px;
+    cursor: pointer;
+    color: #ffffff;
+    background: #334155;
+    font-size: 13px;
+    font-family: Segoe UI, Arial, sans-serif;
+    margin: 0 5px 7px 0;
+  }
+
+  button:hover { background: #475569; }
+  button.primary { background: #2563eb; }
+  button.primary:hover { background: #1d4ed8; }
+  button.danger { background: #dc2626; }
+  button.danger:hover { background: #b91c1c; }
+  button.green { background: #15803d; }
+  button.green:hover { background: #166534; }
+  button.small {
+    min-height: 30px;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  button.toggle {
+    background: #334155;
+    border: 1px solid #475569;
+  }
+
+  button.toggle.active-blue {
+    background: #2563eb;
+    border-color: #60a5fa;
+  }
+
+  button.toggle.active-green {
+    background: #15803d;
+    border-color: #86efac;
+  }
+
+  button.toggle.active-red {
+    background: #b91c1c;
+    border-color: #fca5a5;
+  }
+
+  button.toggle.active-orange {
+    background: #b45309;
+    border-color: #fdba74;
+  }
+
+  .action-button {
+    min-width: 170px;
+  }
+
+  .divider {
+    height: 1px;
+    background: #26364a;
+    margin: 10px 0 12px 0;
+  }
+
+  .hint {
+    color: #9ca3af;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .info-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 8px;
+    margin: -8px;
+  }
+
+  .info-cell {
+    width: 50%;
+    vertical-align: top;
+  }
+
+  .info-item {
+    background: #060d1c;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 11px;
+    min-height: 82px;
+  }
+
+  .label {
+    color: #9ca3af;
+    font-size: 12px;
+    margin-bottom: 7px;
+  }
+
+  .value {
+    color: #e5e7eb;
+    font-size: 13px;
+    line-height: 18px;
+    word-break: break-word;
+  }
+
+  .value.good { color: #bbf7d0; }
+  .value.warn { color: #fed7aa; }
+  .value.bad { color: #fecaca; }
+  .value.blue { color: #bfdbfe; }
+
+  .badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    background: #64748b;
+    color: white;
+  }
+
+  .badge.ok { background: #15803d; }
+  .badge.bad { background: #b91c1c; }
+  .badge.warn { background: #b45309; }
+  .badge.neutral { background: #475569; }
+  .badge.blue { background: #2563eb; }
+
+  .filter-block {
+    background: #060d1c;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 11px;
+    margin-bottom: 9px;
+  }
+
+  .filter-title {
+    color: #9ca3af;
+    font-size: 12px;
+    margin-bottom: 7px;
+  }
+
+  .filter-value {
+    font-size: 13px;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .filter-note {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 4px;
+    line-height: 1.35;
+  }
+
+  .footer-space {
+    height: 20px;
+  }
+</style>
+
+<script language="javascript">
+var shell = new ActiveXObject("WScript.Shell");
+var fso = new ActiveXObject("Scripting.FileSystemObject");
+var appShell = new ActiveXObject("Shell.Application");
+
+var SELF_PATH = "";
+var ROOT = "";
+var selectedStrategy = "";
+var restartInProgress = false;
+var restartTimer = null;
+var restartPollTicks = 0;
+var restartExpectedMode = "";
+var restartResultPath = "";
+var restartLogPath = "";
+var cachedWinwsRunning = false;
+var cachedZapretStatus = "missing";
+var cachedWinDivertStatus = "missing";
+var cachedIsWorking = false;
+var actionTimer = null;
+var actionKind = "";
+var actionPollTicks = 0;
+var noticeClearTimer = null;
+
+function decodePathFromLocation() {
+  var p = decodeURI(location.pathname);
+
+  if (p.charAt(0) === "/") {
+    p = p.substring(1);
+  }
+
+  return p.replace(/\//g, "\\");
+}
+
+function q(s) {
+  return '"' + String(s).replace(/"/g, '""') + '"';
+}
+
+function psq(s) {
+  return "'" + String(s).replace(/'/g, "''") + "'";
+}
+
+function readFile(path) {
+  try {
+    if (!fso.FileExists(path)) return "";
+
+    var file = fso.OpenTextFile(path, 1, false);
+    var text = file.ReadAll();
+    file.Close();
+
+    return text;
+  } catch (e) {
+    return "";
+  }
+}
+
+function readUnicodeFile(path) {
+  try {
+    if (!fso.FileExists(path)) return "";
+
+    var file = fso.OpenTextFile(path, 1, false, -1);
+    var text = file.ReadAll();
+    file.Close();
+
+    return text;
+  } catch (e) {
+    return "";
+  }
+}
+
+function writeFile(path, text) {
+  var file = fso.OpenTextFile(path, 2, true);
+  file.Write(text);
+  file.Close();
+}
+
+function writeUnicodeFile(path, text) {
+  var file = fso.OpenTextFile(path, 2, true, -1);
+  file.Write(text);
+  file.Close();
+}
+
+function execOut(command) {
+  try {
+    var temp =
+      shell.ExpandEnvironmentStrings("%TEMP%") +
+      "\\zapret_ui_" +
+      new Date().getTime() +
+      "_" +
+      Math.floor(Math.random() * 100000) +
+      ".txt";
+
+    var fullCommand =
+      '%ComSpec% /d /c ' +
+      command +
+      ' > ' + q(temp) + ' 2>&1';
+
+    shell.Run(fullCommand, 0, true);
+
+    if (!fso.FileExists(temp)) {
+      return "";
+    }
+
+    var file = fso.OpenTextFile(temp, 1, false);
+    var text = file.ReadAll();
+    file.Close();
+
+    try { fso.DeleteFile(temp, true); } catch (e) {}
+
+    return text;
+  } catch (ex) {
+    return "";
+  }
+}
+
+function runElevated(command, keepOpen) {
+  var mode = keepOpen ? "/k " : "/c ";
+  appShell.ShellExecute("cmd.exe", mode + command, ROOT, "runas", 1);
+}
+
+function runElevatedFile(filePath) {
+  appShell.ShellExecute("cmd.exe", "/c " + q(filePath), ROOT, "runas", 1);
+}
+
+function setText(id, text) {
+  var el = document.getElementById(id);
+  if (el) el.innerText = text;
+}
+
+function setHTML(id, html) {
+  var el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+
+function setClass(id, className) {
+  var el = document.getElementById(id);
+  if (el) el.className = className;
+}
+
+function setBadge(id, state, text) {
+  var el = document.getElementById(id);
+  if (!el) return;
+
+  el.className = "badge " + state;
+  el.innerText = text;
+}
+
+function setMainState(state, text) {
+  var el = document.getElementById("mainState");
+  if (!el) return;
+
+  el.className = "main-state " + state;
+  el.innerText = text;
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function setNotice(type, text, autoHideMs) {
+  var el = document.getElementById("notice");
+  if (!el) return;
+
+  if (noticeClearTimer) {
+    window.clearTimeout(noticeClearTimer);
+    noticeClearTimer = null;
+  }
+
+  el.className = "notice " + type;
+  el.innerHTML = '<span>' + escapeHtml(text) + '</span><button class="notice-close" onclick="clearNotice()" title="Скрыть">×</button>';
+
+  if (autoHideMs && autoHideMs > 0) {
+    noticeClearTimer = window.setTimeout(clearNotice, autoHideMs);
+  }
+}
+
+function clearNotice() {
+  var el = document.getElementById("notice");
+  if (!el) return;
+
+  if (noticeClearTimer) {
+    window.clearTimeout(noticeClearTimer);
+    noticeClearTimer = null;
+  }
+
+  el.className = "notice hidden";
+  el.innerHTML = "";
+}
+
+function ensureLogsFolder() {
+  var path = ROOT + "logs";
+  if (!fso.FolderExists(path)) {
+    fso.CreateFolder(path);
+  }
+  return path + "\\";
+}
+
+function getStatePath() {
+  return ROOT + "zapret-ui.state";
+}
+
+function parseStateText(text) {
+  var state = {};
+  var lines = String(text || "").split(/\r?\n/);
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    var pos = line.indexOf("=");
+    if (pos <= 0) continue;
+    var key = line.substring(0, pos);
+    var value = line.substring(pos + 1);
+    state[key] = value;
+  }
+
+  return state;
+}
+
+function stateHasData(state) {
+  for (var key in state) {
+    if (state.hasOwnProperty(key)) return true;
+  }
+  return false;
+}
+
+function loadState() {
+  var path = getStatePath();
+
+  // State-файл может содержать кириллицу из старых версий/путей.
+  // Поэтому сначала читаем Unicode, а ANSI оставляем как fallback для старого state.
+  var state = parseStateText(readUnicodeFile(path));
+
+  if (!stateHasData(state)) {
+    state = parseStateText(readFile(path));
+  }
+
+  return state;
+}
+
+function saveState(state) {
+  var text = "";
+  for (var key in state) {
+    if (state.hasOwnProperty(key)) {
+      text += key + "=" + String(state[key] || "") + "\r\n";
+    }
+  }
+
+  // Пишем state в Unicode: так не ломаются русские пути/символы и не падает FSO.Write.
+  writeUnicodeFile(getStatePath(), text);
+}
+
+function saveRunSnapshot(strategyName) {
+  var state = loadState();
+  var settings = getCurrentSettings();
+
+  state.last_strategy = strategyName || "";
+  state.last_game = settings.game;
+  state.last_ipset = settings.ipset;
+  state.last_auto = settings.autoUpdate;
+  state.last_started_at = new Date().toLocaleString();
+  state.last_started_by_ui = "1";
+
+  saveState(state);
+}
+
+function populateStrategies() {
+  var list = document.getElementById("strategyList");
+  list.innerHTML = "";
+
+  if (!fso.FolderExists(ROOT)) {
+    list.innerHTML = '<div class="strategy-item">Папка не найдена</div>';
+    return;
+  }
+
+  var folder = fso.GetFolder(ROOT);
+  var files = new Enumerator(folder.Files);
+  var names = [];
+
+  for (; !files.atEnd(); files.moveNext()) {
+    var name = files.item().Name;
+
+    if (/\.bat$/i.test(name) && !/^service/i.test(name)) {
+      names.push(name);
+    }
+  }
+
+  names.sort();
+
+  if (names.length === 0) {
+    list.innerHTML = '<div class="strategy-item">Стратегии .bat не найдены</div>';
+    setText("selectedStrategyText", "ничего не выбрано");
+    return;
+  }
+
+  var state = loadState();
+  var preferred = state.last_strategy || names[0];
+  var foundPreferred = false;
+
+  for (var p = 0; p < names.length; p++) {
+    if (names[p] === preferred) foundPreferred = true;
+  }
+
+  if (!foundPreferred) preferred = names[0];
+
+  for (var i = 0; i < names.length; i++) {
+    var item = document.createElement("div");
+    item.className = "strategy-item";
+    item.innerText = names[i];
+    item.title = names[i];
+    item.setAttribute("data-name", names[i]);
+
+    item.onclick = function () {
+      selectStrategy(this.getAttribute("data-name"));
+    };
+
+    list.appendChild(item);
+  }
+
+  selectStrategy(preferred);
+}
+
+function selectStrategy(name) {
+  selectedStrategy = name;
+  setText("selectedStrategyText", name);
+
+  var list = document.getElementById("strategyList");
+  var items = list.getElementsByTagName("div");
+
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].getAttribute("data-name") === name) {
+      items[i].className = "strategy-item active";
+    } else {
+      items[i].className = "strategy-item";
+    }
+  }
+}
+
+function isWinwsRunning() {
+  var tasklist = execOut('tasklist /FI "IMAGENAME eq winws.exe" /NH');
+  return tasklist.toLowerCase().indexOf("winws.exe") >= 0;
+}
+
+function getZapretServiceStatus() {
+  var out = execOut('sc query "zapret" 2>nul');
+  var low = out.toLowerCase();
+
+  if (low.indexOf("running") >= 0) return "running";
+  if (low.indexOf("stopped") >= 0) return "stopped";
+  if (low.indexOf("state") >= 0) return "installed";
+
+  return "missing";
+}
+
+function getServiceStrategyName() {
+  var out = execOut('reg query "HKLM\\System\\CurrentControlSet\\Services\\zapret" /v zapret-discord-youtube 2>nul');
+  var m = out.match(/REG_SZ\s+(.+)/i);
+
+  if (m && m[1]) {
+    return m[1].replace(/^\s+|\s+$/g, "");
+  }
+
+  return "не выбрана";
+}
+
+function getWinDivertStatus() {
+  var out1 = execOut('sc query "WinDivert" 2>nul');
+  var out2 = execOut('sc query "WinDivert14" 2>nul');
+  var out = (out1 + out2).toLowerCase();
+
+  if (out.indexOf("running") >= 0) return "running";
+  if (out.indexOf("state") >= 0) return "installed";
+
+  return "missing";
+}
+
+function getGameFilterMode() {
+  var path = ROOT + "utils\\game_filter.enabled";
+
+  if (!fso.FileExists(path)) return "off";
+
+  var value = readFile(path).replace(/^\s+|\s+$/g, "").toLowerCase();
+
+  if (value === "all") return "all";
+  if (value === "tcp") return "tcp";
+  if (value === "udp") return "udp";
+
+  return "on";
+}
+
+function gameModeLabel(mode) {
+  if (mode === "off") return "Off";
+  if (mode === "all") return "TCP + UDP";
+  if (mode === "tcp") return "TCP";
+  if (mode === "udp") return "UDP";
+  return "включен";
+}
+
+function getAutoUpdateMode() {
+  var path = ROOT + "utils\\check_updates.enabled";
+  return fso.FileExists(path) ? "on" : "off";
+}
+
+function autoUpdateLabel(mode) {
+  return mode === "on" ? "On" : "Off";
+}
+
+function getIPSetMode() {
+  var path = ROOT + "lists\\ipset-all.txt";
+
+  if (!fso.FileExists(path)) return "missing";
+
+  var text = readFile(path);
+  var clean = text.replace(/\s+/g, "");
+
+  if (clean === "") return "any";
+
+  if (/^\s*203\.0\.113\.113\/32\s*$/.test(text)) {
+    return "none";
+  }
+
+  return "loaded";
+}
+
+function ipsetLabel(mode) {
+  if (mode === "none") return "None";
+  if (mode === "loaded") return "Loaded";
+  if (mode === "any") return "Any";
+  return "файл не найден";
+}
+
+function getCurrentSettings() {
+  return {
+    game: getGameFilterMode(),
+    ipset: getIPSetMode(),
+    autoUpdate: getAutoUpdateMode()
+  };
+}
+
+function settingsDifferFromLastRun() {
+  var state = loadState();
+  if (state.last_started_by_ui !== "1") return false;
+
+  var settings = getCurrentSettings();
+
+  if ((state.last_game || "") !== settings.game) return true;
+  if ((state.last_ipset || "") !== settings.ipset) return true;
+  if ((state.last_auto || "") !== settings.autoUpdate) return true;
+
+  return false;
+}
+
+function updateToggleButtons() {
+  var settings = getCurrentSettings();
+
+  setClass("gameOffBtn", "small toggle" + (settings.game === "off" ? " active-red" : ""));
+  setClass("gameAllBtn", "small toggle" + (settings.game === "all" ? " active-blue" : ""));
+  setClass("gameTcpBtn", "small toggle" + (settings.game === "tcp" ? " active-blue" : ""));
+  setClass("gameUdpBtn", "small toggle" + (settings.game === "udp" ? " active-blue" : ""));
+
+  setClass("ipsetNoneBtn", "small toggle" + (settings.ipset === "none" ? " active-red" : ""));
+  setClass("ipsetLoadedBtn", "small toggle" + (settings.ipset === "loaded" ? " active-blue" : ""));
+  setClass("ipsetAnyBtn", "small toggle" + (settings.ipset === "any" ? " active-orange" : ""));
+
+  setClass("autoOnBtn", "small toggle" + (settings.autoUpdate === "on" ? " active-green" : ""));
+  setClass("autoOffBtn", "small toggle" + (settings.autoUpdate === "off" ? " active-red" : ""));
+}
+
+function updateSettingsPanelQuick() {
+  var settings = getCurrentSettings();
+  updateToggleButtons();
+
+  setText("savedGameText", gameModeLabel(settings.game));
+  setText("savedIPSetText", ipsetLabel(settings.ipset));
+  setText("savedAutoText", autoUpdateLabel(settings.autoUpdate));
+
+  if (cachedIsWorking) {
+    setText("settingsStatusText", "нужен перезапуск");
+    setClass("settingsStatusText", "value warn");
+    setMainState("warn", "НУЖЕН ПЕРЕЗАПУСК");
+    setText("summaryTitle", "Zapret работает");
+    setText("summaryText", "Нужен перезапуск для новых настроек.");
+  } else {
+    setText("settingsStatusText", "ожидают запуска");
+    setClass("settingsStatusText", "value blue");
+  }
+}
+
+function updateStatus() {
+  setText("rootPath", ROOT);
+
+  var winwsRunning = isWinwsRunning();
+  var zapret = getZapretServiceStatus();
+  var wd = getWinDivertStatus();
+  var settings = getCurrentSettings();
+  var dirty = winwsRunning && settingsDifferFromLastRun();
+  var state = loadState();
+  var serviceStrategy = getServiceStrategyName();
+
+  cachedWinwsRunning = winwsRunning;
+  cachedZapretStatus = zapret;
+  cachedWinDivertStatus = wd;
+  cachedIsWorking = winwsRunning || zapret === "running";
+
+  updateToggleButtons();
+
+  var isWorking = cachedIsWorking;
+  var runModeText = "остановлено";
+  var currentStrategyText = "не запущена";
+  var settingsStatusText = "";
+  var settingsStatusClass = "value";
+
+  if (zapret === "running") {
+    runModeText = "запущено службой Windows";
+    currentStrategyText = serviceStrategy;
+  } else if (winwsRunning) {
+    runModeText = "запущено вручную";
+    if (state.last_strategy) {
+      currentStrategyText = state.last_strategy;
+    } else {
+      currentStrategyText = "не определена — запущено вне UI";
+    }
+  } else {
+    runModeText = "остановлено";
+    currentStrategyText = "не запущена";
+  }
+
+  if (isWorking && dirty) {
+    setMainState("warn", "НУЖЕН ПЕРЕЗАПУСК");
+    setText("summaryTitle", "Zapret работает");
+    setText("summaryText", "Нужен перезапуск для новых настроек.");
+    settingsStatusText = "нужен перезапуск";
+    settingsStatusClass = "value warn";
+  } else if (isWorking) {
+    setMainState("ok", "РАБОТАЕТ");
+    setText("summaryTitle", "Zapret работает");
+    setText("summaryText", "Режим: " + runModeText + ". Настройки применены.");
+    settingsStatusText = "применены";
+    settingsStatusClass = "value good";
+  } else {
+    setMainState("bad", "ОСТАНОВЛЕН");
+    setText("summaryTitle", "Zapret остановлен");
+    setText("summaryText", "Сохранённые настройки применятся при следующем запуске.");
+    settingsStatusText = "ожидают запуска";
+    settingsStatusClass = "value blue";
+  }
+
+  setText("runModeText", runModeText);
+  setText("currentStrategyText", currentStrategyText);
+
+  setText("savedGameText", gameModeLabel(settings.game));
+  setText("savedIPSetText", ipsetLabel(settings.ipset));
+  setText("savedAutoText", autoUpdateLabel(settings.autoUpdate));
+  setText("settingsStatusText", settingsStatusText);
+  setClass("settingsStatusText", settingsStatusClass);
+
+  if (winwsRunning) {
+    setBadge("winwsBadge", "ok", "запущен");
+  } else {
+    setBadge("winwsBadge", "neutral", "не запущен");
+  }
+
+  if (wd === "running") {
+    setBadge("windivertBadge", "ok", "работает");
+  } else if (wd === "installed") {
+    setBadge("windivertBadge", "warn", "установлен, но не работает");
+  } else {
+    setBadge("windivertBadge", "neutral", "не найден");
+  }
+
+  if (zapret === "running") {
+    setBadge("autostartBadge", "ok", "настроен и работает");
+    setText("autostartExplain", "Zapret установлен как служба Windows и сейчас работает через автозапуск.");
+  } else if (zapret === "stopped" || zapret === "installed") {
+    setBadge("autostartBadge", "warn", "настроен, но остановлен");
+    setText("autostartExplain", "Служба zapret есть в Windows, но сейчас не работает.");
+  } else {
+    setBadge("autostartBadge", "neutral", "не настроен");
+    setText("autostartExplain", "Автозапуск нужен только если хотите запускать zapret вместе с Windows.");
+  }
+
+  if (zapret === "missing") {
+    setText("serviceStatusText", "не установлена");
+  } else if (zapret === "running") {
+    setText("serviceStatusText", "работает");
+  } else {
+    setText("serviceStatusText", "установлена, но остановлена");
+  }
+
+  setText("serviceStrategyText", serviceStrategy);
+
+  setText("techModeText", runModeText);
+  setText("techLastStartText", state.last_started_at || "нет данных");
+  setText("techLastStrategyText", state.last_strategy || "нет данных");
+}
+
+function showSettingsChangedNotice() {
+  updateSettingsPanelQuick();
+
+  if (cachedIsWorking) {
+    setNotice("warn", "Нужен перезапуск.");
+  } else {
+    setNotice("info", "Сохранено.", 3000);
+  }
+}
+
+function startSelectedStrategy() {
+  var name = selectedStrategy;
+
+  if (!name) {
+    alert("Стратегия не выбрана.");
+    return;
+  }
+
+  var fullPath = ROOT + name;
+
+  if (!fso.FileExists(fullPath)) {
+    alert("Файл не найден:\n" + fullPath);
+    return;
+  }
+
+  saveRunSnapshot(name);
+  runElevatedFile(fullPath);
+  setNotice("info", "Запускаю…");
+  startActionPoll("start");
+}
+
+function stopNow() {
+  var cmd =
+    'taskkill /IM winws.exe /F 2>nul & ' +
+    'net stop zapret 2>nul & ' +
+    'net stop WinDivert 2>nul & ' +
+    'net stop WinDivert14 2>nul';
+
+  runElevated(cmd, false);
+  setNotice("info", "Останавливаю…");
+  startActionPoll("stop");
+}
+
+function startActionPoll(kind) {
+  if (actionTimer) {
+    window.clearInterval(actionTimer);
+    actionTimer = null;
+  }
+
+  actionKind = kind;
+  actionPollTicks = 0;
+  actionTimer = window.setInterval(pollAction, 1000);
+}
+
+function finishActionNotice(type, text, autoHideMs) {
+  if (actionTimer) {
+    window.clearInterval(actionTimer);
+    actionTimer = null;
+  }
+
+  actionKind = "";
+  actionPollTicks = 0;
+  updateStatus();
+  setNotice(type, text, autoHideMs);
+}
+
+function pollAction() {
+  actionPollTicks++;
+
+  if (actionKind === "start") {
+    if (isWinwsRunning() || getZapretServiceStatus() === "running") {
+      finishActionNotice("ok", "Запущено.", 4000);
+      return;
+    }
+
+    if (actionPollTicks >= 35) {
+      finishActionNotice("bad", "Не удалось подтвердить запуск.", 0);
+      return;
+    }
+  }
+
+  if (actionKind === "stop") {
+    if (!isWinwsRunning() && getZapretServiceStatus() !== "running") {
+      finishActionNotice("ok", "Остановлено.", 4000);
+      return;
+    }
+
+    if (actionPollTicks >= 35) {
+      finishActionNotice("bad", "Не удалось подтвердить остановку.", 0);
+      return;
+    }
+  }
+}
+
+function removeServices() {
+  var yes = confirm(
+    "Удалить службы zapret / WinDivert?\n\n" +
+    "Это остановит zapret и удалит установленные службы.\n" +
+    "Ручные .bat-стратегии останутся на месте."
+  );
+
+  if (!yes) return;
+
+  var cmd =
+    'taskkill /IM winws.exe /F 2>nul & ' +
+    'net stop zapret 2>nul & sc delete zapret 2>nul & ' +
+    'net stop WinDivert 2>nul & sc delete WinDivert 2>nul & ' +
+    'net stop WinDivert14 2>nul & sc delete WinDivert14 2>nul';
+
+  runElevated(cmd, false);
+  setNotice("warn", "Удаляю службы…");
+  setTimeout(updateStatus, 3000);
+}
+
+function openServiceMenu() {
+  var service = ROOT + "service.bat";
+
+  if (!fso.FileExists(service)) {
+    alert("service.bat не найден:\n" + service);
+    return;
+  }
+
+  runElevated(q(service), true);
+}
+
+function runTests() {
+  var test1 = ROOT + "utils\\test zapret.ps1";
+  var test2 = ROOT + "utils\\blockcheck.cmd";
+
+  if (fso.FileExists(test1)) {
+    runElevated('powershell -NoProfile -ExecutionPolicy Bypass -File ' + q(test1), true);
+    return;
+  }
+
+  if (fso.FileExists(test2)) {
+    runElevated(q(test2), true);
+    return;
+  }
+
+  alert("Файл тестов не найден.\nПроверялись:\n" + test1 + "\n" + test2);
+}
+
+function setAutoUpdate(enabled) {
+  var path = ROOT + "utils\\check_updates.enabled";
+
+  if (!fso.FolderExists(ROOT + "utils")) {
+    alert("Папка utils не найдена.");
+    return;
+  }
+
+  if (enabled) {
+    writeFile(path, "ENABLED\r\n");
+  } else {
+    if (fso.FileExists(path)) fso.DeleteFile(path, true);
+  }
+
+  showSettingsChangedNotice();
+}
+
+function setGameFilter(mode) {
+  var path = ROOT + "utils\\game_filter.enabled";
+
+  if (!fso.FolderExists(ROOT + "utils")) {
+    alert("Папка utils не найдена.");
+    return;
+  }
+
+  if (mode === "off") {
+    if (fso.FileExists(path)) fso.DeleteFile(path, true);
+  } else {
+    writeFile(path, mode + "\r\n");
+  }
+
+  showSettingsChangedNotice();
+}
+
+function setIPSetMode(mode) {
+  var list = ROOT + "lists\\ipset-all.txt";
+  var backup = ROOT + "lists\\ipset-all.txt.backup";
+
+  if (!fso.FileExists(list)) {
+    alert("ipset-all.txt не найден:\n" + list);
+    return;
+  }
+
+  if (mode === "none") {
+    if (!fso.FileExists(backup)) {
+      fso.CopyFile(list, backup, true);
+    }
+    writeFile(list, "203.0.113.113/32\r\n");
+  }
+
+  if (mode === "any") {
+    if (!fso.FileExists(backup)) {
+      fso.CopyFile(list, backup, true);
+    }
+    writeFile(list, "");
+  }
+
+  if (mode === "loaded") {
+    if (!fso.FileExists(backup)) {
+      alert("Backup ipset-all.txt.backup не найден. Сначала обнови IPSet через service.bat.");
+      return;
+    }
+    fso.CopyFile(backup, list, true);
+  }
+
+  showSettingsChangedNotice();
+}
+
+function createRestartScript(psPath, resultPath, logPath, mode, strategyPath) {
+  var root = ROOT;
+
+  var ps = "";
+  ps += "$ErrorActionPreference = 'Continue'\r\n";
+  ps += "$log = " + psq(logPath) + "\r\n";
+  ps += "$result = " + psq(resultPath) + "\r\n";
+  ps += "$root = " + psq(root) + "\r\n";
+  ps += "$strategy = " + psq(strategyPath) + "\r\n";
+  ps += "$mode = " + psq(mode) + "\r\n";
+  ps += "function Add-Log([string]$text) { Add-Content -LiteralPath $log -Encoding UTF8 -Value $text }\r\n";
+  ps += "Set-Content -LiteralPath $result -Encoding UTF8 -Value 'RUNNING'\r\n";
+  ps += "Set-Content -LiteralPath $log -Encoding UTF8 -Value 'Zapret UI restart log'\r\n";
+  ps += "Add-Log ('Started: ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'))\r\n";
+  ps += "Add-Log ('Mode: ' + $mode)\r\n";
+  ps += "Add-Log ('Root: ' + $root)\r\n";
+  ps += "try {\r\n";
+  ps += "  if ($mode -eq 'service') {\r\n";
+  ps += "    Add-Log 'Restarting Windows service zapret...'\r\n";
+  ps += "    & net stop zapret 2>&1 | ForEach-Object { Add-Log $_ }\r\n";
+  ps += "    Start-Sleep -Seconds 2\r\n";
+  ps += "    & net start zapret 2>&1 | ForEach-Object { Add-Log $_ }\r\n";
+  ps += "    $ok = $false\r\n";
+  ps += "    for ($i = 0; $i -lt 30; $i++) {\r\n";
+  ps += "      Start-Sleep -Seconds 1\r\n";
+  ps += "      $svc = Get-Service -Name zapret -ErrorAction SilentlyContinue\r\n";
+  ps += "      if ($svc -and $svc.Status -eq 'Running') { $ok = $true; break }\r\n";
+  ps += "    }\r\n";
+  ps += "    if ($ok) { Set-Content -LiteralPath $result -Encoding UTF8 -Value 'OK_SERVICE'; Add-Log 'Result: OK_SERVICE' } else { Set-Content -LiteralPath $result -Encoding UTF8 -Value 'FAIL_TIMEOUT'; Add-Log 'Result: FAIL_TIMEOUT' }\r\n";
+  ps += "  } else {\r\n";
+  ps += "    Add-Log 'Restarting manual strategy...'\r\n";
+  ps += "    Add-Log '> taskkill /IM winws.exe /F'\r\n";
+  ps += "    & taskkill /IM winws.exe /F 2>&1 | ForEach-Object { Add-Log $_ }\r\n";
+  ps += "    Add-Log '> net stop WinDivert'\r\n";
+  ps += "    & net stop WinDivert 2>&1 | ForEach-Object { Add-Log $_ }\r\n";
+  ps += "    Add-Log '> net stop WinDivert14'\r\n";
+  ps += "    & net stop WinDivert14 2>&1 | ForEach-Object { Add-Log $_ }\r\n";
+  ps += "    Start-Sleep -Seconds 2\r\n";
+  ps += "    Add-Log ('Launching strategy: ' + $strategy)\r\n";
+  ps += "    if (-not (Test-Path -LiteralPath $strategy)) { Add-Log 'Strategy file not found'; Set-Content -LiteralPath $result -Encoding UTF8 -Value 'FAIL_NOT_FOUND'; exit }\r\n";
+  ps += "    $arg = '/d /c call \"' + $strategy + '\"'\r\n";
+  ps += "    Start-Process -FilePath $env:ComSpec -ArgumentList $arg -WorkingDirectory $root -WindowStyle Hidden\r\n";
+  ps += "    $ok = $false\r\n";
+  ps += "    for ($i = 0; $i -lt 30; $i++) {\r\n";
+  ps += "      Start-Sleep -Seconds 1\r\n";
+  ps += "      $p = Get-Process -Name winws -ErrorAction SilentlyContinue\r\n";
+  ps += "      if ($p) { $ok = $true; break }\r\n";
+  ps += "    }\r\n";
+  ps += "    if ($ok) { Set-Content -LiteralPath $result -Encoding UTF8 -Value 'OK_MANUAL'; Add-Log 'Result: OK_MANUAL' } else { Set-Content -LiteralPath $result -Encoding UTF8 -Value 'FAIL_TIMEOUT'; Add-Log 'Result: FAIL_TIMEOUT' }\r\n";
+  ps += "  }\r\n";
+  ps += "} catch {\r\n";
+  ps += "  Add-Log ('Exception: ' + $_.Exception.Message)\r\n";
+  ps += "  Set-Content -LiteralPath $result -Encoding UTF8 -Value 'FAIL_EXCEPTION'\r\n";
+  ps += "}\r\n";
+
+  writeUnicodeFile(psPath, ps);
+}
+
+function applyAndRestart() {
+  if (restartInProgress) {
+    setNotice("warn", "Перезапуск уже выполняется.");
+    return;
+  }
+
+  var zapret = getZapretServiceStatus();
+  var mode = zapret === "running" ? "service" : "manual";
+  var strategyPath = "";
+
+  if (mode === "manual") {
+    if (!selectedStrategy) {
+      alert("Стратегия не выбрана.");
+      return;
+    }
+    strategyPath = ROOT + selectedStrategy;
+    if (!fso.FileExists(strategyPath)) {
+      alert("Файл стратегии не найден:\n" + strategyPath);
+      return;
+    }
+  }
+
+  var logs = ensureLogsFolder();
+  var token = String(new Date().getTime()) + "_" + String(Math.floor(Math.random() * 100000));
+  var psPath = logs + "zapret-ui-restart-" + token + ".ps1";
+  var resultPath = logs + "zapret-ui-restart-" + token + ".result.txt";
+  var logPath = logs + "zapret-ui-restart-" + token + ".log.txt";
+
+  createRestartScript(psPath, resultPath, logPath, mode, strategyPath);
+
+  restartInProgress = true;
+  restartPollTicks = 0;
+  restartExpectedMode = mode;
+  restartResultPath = resultPath;
+  restartLogPath = logPath;
+
+  setNotice("info", "Перезапуск…");
+  appShell.ShellExecute("powershell.exe", "-NoProfile -ExecutionPolicy Bypass -File " + q(psPath), ROOT, "runas", 0);
+
+  if (restartTimer) {
+    window.clearInterval(restartTimer);
+    restartTimer = null;
+  }
+
+  restartTimer = window.setInterval(pollRestart, 1000);
+}
+
+function pollRestart() {
+  if (!restartInProgress) return;
+
+  restartPollTicks++;
+  updateStatus();
+
+  var result = "";
+  if (restartResultPath && fso.FileExists(restartResultPath)) {
+    result = readFile(restartResultPath).replace(/^\s+|\s+$/g, "");
+  }
+
+  if (result.indexOf("OK_") === 0) {
+    completeRestart(true, result);
+    return;
+  }
+
+  if (result.indexOf("FAIL_") === 0) {
+    completeRestart(false, result);
+    return;
+  }
+
+  if (restartPollTicks >= 6) {
+    if (restartExpectedMode === "manual" && isWinwsRunning()) {
+      completeRestart(true, "OK_MANUAL_FALLBACK");
+      return;
+    }
+
+    if (restartExpectedMode === "service" && getZapretServiceStatus() === "running") {
+      completeRestart(true, "OK_SERVICE_FALLBACK");
+      return;
+    }
+  }
+
+  if (restartPollTicks >= 45) {
+    completeRestart(false, "FAIL_UI_TIMEOUT");
+  }
+}
+
+function completeRestart(success, result) {
+  if (!restartInProgress) return;
+
+  restartInProgress = false;
+
+  if (restartTimer) {
+    window.clearInterval(restartTimer);
+    restartTimer = null;
+  }
+
+  if (success) {
+    if (restartExpectedMode === "manual") {
+      saveRunSnapshot(selectedStrategy);
+    } else {
+      saveRunSnapshot(getServiceStrategyName());
+    }
+
+    updateStatus();
+    setNotice("ok", "Готово.", 5000);
+  } else {
+    updateStatus();
+    setNotice("bad", "Ошибка. Лог: " + restartLogPath);
+    alert("Ошибка перезапуска.\n\nЛог сохранён:\n" + restartLogPath);
+  }
+}
+
+function openFolder() {
+  appShell.Open(ROOT);
+}
+
+function openLogsFolder() {
+  var logs = ensureLogsFolder();
+  appShell.Open(logs);
+}
+
+function init() {
+  try { window.resizeTo(1210, 840); } catch (e) {}
+
+  SELF_PATH = decodePathFromLocation();
+  ROOT = fso.GetParentFolderName(SELF_PATH) + "\\";
+
+  populateStrategies();
+  updateStatus();
+
+  window.setInterval(updateStatus, 7000);
+}
+</script>
+</head>
+
+<body onload="init()">
+  <div class="app">
+    <div class="header">
+      <table class="header-table">
+        <tr>
+          <td class="header-left">
+            <h1>Zapret UI</h1>
+            <div class="subtitle">Понятная панель управления zapret-discord-youtube</div>
+            <div id="rootPath" class="path">...</div>
+          </td>
+
+          <td class="header-right">
+            <div id="mainState" class="main-state bad">ПРОВЕРКА...</div>
+            <button class="small top-button" onclick="updateStatus()">Обновить</button>
+            <button class="small top-button" onclick="openFolder()">Папка</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div id="notice" class="notice hidden"></div>
+
+    <table class="main-table">
+      <tr>
+        <td class="left-col">
+          <div class="card">
+            <div class="card-title">Стратегии</div>
+            <div class="card-desc">
+              Выбери .bat-стратегию. Сохранённые фильтры применятся при запуске или после перезапуска.
+            </div>
+
+            <div id="strategyList" class="strategy-list"></div>
+
+            <div id="selectedStrategyText" class="selected">ничего не выбрано</div>
+          </div>
+        </td>
+
+        <td class="right-col">
+          <div class="card">
+            <div id="summaryTitle" class="summary-title">Проверяю состояние...</div>
+            <div id="summaryText" class="summary-line">...</div>
+
+            <div class="divider"></div>
+
+            <button class="primary action-button" onclick="startSelectedStrategy()">Запустить выбранную</button>
+            <button class="danger action-button" onclick="stopNow()">Остановить</button>
+            <button class="green action-button" onclick="applyAndRestart()">Применить и перезапустить</button>
+            <button class="action-button" onclick="openServiceMenu()">Открыть service.bat</button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Текущий запуск</div>
+            <div class="card-desc">Что происходит прямо сейчас.</div>
+
+            <table class="info-table">
+              <tr>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">Режим</div>
+                    <div id="runModeText" class="value">...</div>
+                  </div>
+                </td>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">Запущенная стратегия</div>
+                    <div id="currentStrategyText" class="value">...</div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Сохранённые настройки</div>
+            <div class="card-desc">Это настройки, которые будут использоваться при запуске zapret.</div>
+
+            <table class="info-table">
+              <tr>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">Game Filter</div>
+                    <div id="savedGameText" class="value">...</div>
+                  </div>
+                </td>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">IPSet Filter</div>
+                    <div id="savedIPSetText" class="value">...</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">Auto-Update</div>
+                    <div id="savedAutoText" class="value">...</div>
+                  </div>
+                </td>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">Статус настроек</div>
+                    <div id="settingsStatusText" class="value">...</div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Изменить фильтры и настройки</div>
+            <div class="card-desc">Синяя/зелёная/красная кнопка показывает сохранённое значение, а не обязательно активное прямо сейчас.</div>
+
+            <div class="filter-block">
+              <div class="filter-title">Game Filter</div>
+              <button id="gameOffBtn" class="small toggle" onclick="setGameFilter('off')">Off</button>
+              <button id="gameAllBtn" class="small toggle" onclick="setGameFilter('all')">TCP+UDP</button>
+              <button id="gameTcpBtn" class="small toggle" onclick="setGameFilter('tcp')">TCP</button>
+              <button id="gameUdpBtn" class="small toggle" onclick="setGameFilter('udp')">UDP</button>
+              <div class="filter-note">Если zapret уже работает, изменение Game Filter требует перезапуска.</div>
+            </div>
+
+            <div class="filter-block">
+              <div class="filter-title">IPSet Filter</div>
+              <button id="ipsetNoneBtn" class="small toggle" onclick="setIPSetMode('none')">None</button>
+              <button id="ipsetLoadedBtn" class="small toggle" onclick="setIPSetMode('loaded')">Loaded</button>
+              <button id="ipsetAnyBtn" class="small toggle" onclick="setIPSetMode('any')">Any</button>
+              <div class="filter-note">Изменяет сохранённый ipset-all.txt. После изменения при работающем zapret нужен перезапуск.</div>
+            </div>
+
+            <div class="filter-block">
+              <div class="filter-title">Auto-Update</div>
+              <button id="autoOnBtn" class="small toggle" onclick="setAutoUpdate(true)">On</button>
+              <button id="autoOffBtn" class="small toggle" onclick="setAutoUpdate(false)">Off</button>
+              <div class="filter-note">Влияет на проверку обновлений при следующем запуске стратегии.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Автозапуск Windows</div>
+            <div class="card-desc">Отдельный режим, когда zapret установлен как служба Windows.</div>
+
+            <table class="info-table">
+              <tr>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">Статус автозапуска</div>
+                    <span id="autostartBadge" class="badge neutral">...</span>
+                  </div>
+                </td>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">Служба zapret</div>
+                    <div id="serviceStatusText" class="value">...</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="info-cell" colspan="2">
+                  <div class="info-item">
+                    <div class="label">Стратегия автозапуска</div>
+                    <div id="serviceStrategyText" class="value">...</div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <div id="autostartExplain" class="hint" style="margin-top:10px;">...</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Техническая диагностика</div>
+            <div class="card-desc">Нужна в основном для понимания проблем и логов.</div>
+
+            <table class="info-table">
+              <tr>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">winws.exe</div>
+                    <span id="winwsBadge" class="badge neutral">...</span>
+                  </div>
+                </td>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">WinDivert</div>
+                    <span id="windivertBadge" class="badge neutral">...</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">Последний запуск через UI</div>
+                    <div id="techLastStartText" class="value">...</div>
+                  </div>
+                </td>
+                <td class="info-cell">
+                  <div class="info-item">
+                    <div class="label">Последняя стратегия через UI</div>
+                    <div id="techLastStrategyText" class="value">...</div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <button class="small" onclick="runTests()">Запустить тесты</button>
+            <button class="small" onclick="openLogsFolder()">Открыть logs</button>
+            <button class="small" onclick="updateStatus()">Обновить статус</button>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div class="footer-space"></div>
+  </div>
+</body>
+</html>
