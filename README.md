@@ -2,8 +2,7 @@
 
 Интерфейс не заменяет `service.bat`, а только упрощает ручной запуск стратегий, переключение поддерживаемых настроек и просмотр статуса.
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/6cd9949f-070c-473e-8e83-b9b94f878fec" />
-
+<img width="1867" height="1004" alt="image" src="https://github.com/user-attachments/assets/152aad2f-37a3-498d-a830-eeee5f3b2019" />
 
 ## Возможности
 
